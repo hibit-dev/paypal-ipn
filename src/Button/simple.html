@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HiBit - PayPal IPN: simple button</title>
+</head>
+<body>
+    <div id="paypal-button-container"></div>
+
+    <!-- TODO Replace [CLIENT_ID] with your own app client ID -->
+    <script src="https://www.paypal.com/sdk/js?client-id=[CLIENT_ID]"></script>
+
+    <script type="text/javascript">
+        paypal.Buttons({
+            // Order is created on the server and the order id is returned
+            createOrder: (data, actions) => {
+                return actions.order.create({
+                    purchase_units: [{
+						description: 'HiBit: item description',
+                        amount: {
+                            currency_code: 'USD',
+                            value: 2.50
+                        },
+                        custom: 'optional_custom_field_value'
+                    }]
+                });
+            },
+
+            onApprove: function(data, actions) {
+                return actions.order.capture().then(function(orderData) {
+                    // Full available details
+                    console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
+
+                    // Or go to another URL: actions.redirect('thank_you.html');
+                    //actions.redirect('thank_you.html');
+                });
+            },
+
+            onError: function(err) {
+                console.log(err);
+            }
+        }).render('#paypal-button-container');
+    </script>
+</body>
+</html>
